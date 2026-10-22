@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Train Delay Prediction System - ML Project</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark px-4 shadow">
+        <a class="navbar-brand fw-bold" href="/">
+            <i class="fa-solid fa-train-subway text-warning me-2"></i> RailPunctual ML
+        </a>
+        <div class="ms-auto text-light small d-none d-md-block">
+            <span class="badge bg-primary me-2">ML Mini Project Deployment</span>
+            <span class="badge bg-success">Model: Gradient Boosting</span>
+        </div>
+    </nav>
+
+    <div class="container py-4">
+        
+        <!-- Header Banner -->
+        <div class="p-4 mb-4 bg-light rounded-3 shadow-sm border">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h2 class="fw-bold mb-1">🚆 Train Delay Prediction System</h2>
+                    <p class="text-muted mb-0">
+                        Predict whether a train will arrive <strong>more than 15 minutes late</strong> before departure based on route, weather, and operational factors.
+                    </p>
+                </div>
+                <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                    <div class="bg-white p-2 rounded border d-inline-block text-start">
+                        <small class="text-muted d-block">Production Model Performance:</small>
+                        <span class="fw-bold text-success me-2">Accuracy: {{ (metrics.accuracy * 100)|round(1) }}%</span>
+                        <span class="fw-bold text-primary">ROC-AUC: {{ metrics.roc_auc }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% if error %}
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <strong>Error:</strong> {{ error }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        {% endif %}
+
+        <div class="row g-4">
+            
+            <!-- Left Column: Input Form -->
+            <div class="col-lg-7">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-header bg-white py-3 border-bottom">
+                        <h5 class="card-title mb-0 fw-bold text-primary">
+                            <i class="fa-solid fa-sliders me-2"></i> Journey & Operational Inputs
+                        </h5>
+                    </div>
+                    <div class="card-body p-4">
+                        <form action="/predict" method="POST">
+                            
+                            <!-- Row 1: Train Type & Season -->
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold">Train Type</label>
+                                    <select class="form-select" name="train_type" required>
+                                        {% for t in train_types %}
+                                        <option value="{{ t }}" {% if t == 'Mail/Express' %}selected{% endif %}>{{ t }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold">Season / Weather</label>
+                                    <select class="form-select" name="season" required>
+                                        {% for s in seasons %}
+                                        <option value="{{ s }}" {% if s == 'Monsoon' %}selected{% endif %}>{{ s }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Row 2: Railway Zone & Departure Hour -->
+                            <div class="row mb-3">
+                                <div class="col-md-7">
+                                    <label class="form-label fw-semibold">Railway Zone</label>
+                                    <select class="form-select" name="zone" required>
+                                        {% for z in zones %}
+                                        <option value="{{ z }}" {% if 'Northern' in z %}selected{% endif %}>{{ z }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-md-5">
+                                    <label class="form-label fw-semibold">Departure Hour (0-23)</label>
+                                    <input type="number" class="form-control" name="departure_hour" min="0" max="23" value="14" required>
+                                    <small class="text-muted">e.g. 14 for 2:00 PM</small>
+                                </div>
+                            </div>
+
+                            <!-- Row 3: Distance, Scheduled Hours, Stops -->
+                            <div class="row mb-3">
+                                <div class="col-md-4">
+                                    <label class="form-label fw-semibold">Distance (km)</label>
+                                    <input type="number" class="form-control" name="distance_km" min="10" max="4000" value="550" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label fw-semibold">Scheduled Time (hrs)</label>
+                                    <input type="number" step="0.1" class="form-control" name="scheduled_travel_hours" min="0.5" max="60" value="9.5" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label fw-semibold">Stops Count</label>
+                                    <input type="number" class="form-control" name="num_scheduled_stops" min="0" max="60" value="12" required>
+                                </div>
+                            </div>
+
+                            <!-- Row 4: Historical Route On-Time % & Station Category -->
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold">Historical Route On-Time %</label>
+                                    <input type="number" step="0.1" class="form-control" name="route_historical_ontime_pct" min="10" max="100" value="65.0" required>
+                                    <small class="text-muted">Past punctuality on this route</small>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label fw-semibold">Source Tier</label>
+                                    <select class="form-select" name="source_station_category">
+                                        {% for cat in station_cats %}
+                                        <option value="{{ cat }}" {% if cat == 'A' %}selected{% endif %}>{{ cat }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label fw-semibold">Dest Tier</label>
+                                    <select class="form-select" name="destination_station_category">
+                                        {% for cat in station_cats %}
+                                        <option value="{{ cat }}" {% if cat == 'B' %}selected{% endif %}>{{ cat }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Row 5: Operational Toggles / Checkboxes -->
+                            <div class="mb-4 p-3 bg-light rounded border">
+                                <label class="form-label fw-bold mb-2 text-dark">
+                                    <i class="fa-solid fa-circle-exclamation text-warning me-1"></i> Special Operational Conditions:
+                                </label>
+                                <div class="row g-2">
+                                    <div class="col-md-6">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="late_incoming_rake" value="1" id="late_rake">
+                                            <label class="form-check-label fw-semibold" for="late_rake">
+                                                Late Incoming Rake (Trainset was late on previous trip)
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="track_doubled" value="1" id="track_doubled" checked>
+                                            <label class="form-check-label" for="track_doubled">
+                                                Doubled Track Available
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="is_weekend" value="1" id="is_weekend">
+                                            <label class="form-check-label" for="is_weekend">
+                                                Weekend Departure (Sat/Sun)
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Submit Button -->
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary btn-lg fw-bold shadow-sm">
+                                    <i class="fa-solid fa-chart-line me-2"></i> Predict Delay Status
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Prediction Results & Info -->
+            <div class="col-lg-5">
+                {% if result %}
+                <!-- Prediction Output Card -->
+                <div class="card shadow border-0 mb-4 animate-fade-in">
+                    <div class="card-header py-3 text-white {% if result.is_delayed == 1 %}bg-danger{% else %}bg-success{% endif %}">
+                        <h5 class="card-title mb-0 fw-bold text-center">
+                            <i class="fa-solid {% if result.is_delayed == 1 %}fa-triangle-exclamation{% else %}fa-circle-check{% endif %} me-2"></i>
+                            PREDICTION RESULT
+                        </h5>
+                    </div>
+                    <div class="card-body text-center p-4">
+                        <div class="mb-3">
+                            <span class="badge rounded-pill fs-4 px-4 py-2 {% if result.is_delayed == 1 %}bg-danger{% else %}bg-success{% endif %}">
+                                {{ result.prediction }}
+                            </span>
+                        </div>
+
+                        <h6 class="text-muted mb-2">Estimated Delay Probability:</h6>
+                        <div class="progress mb-3" style="height: 26px;">
+                            <div class="progress-bar fw-bold {% if result.probability > 70 %}bg-danger{% elif result.probability > 50 %}bg-warning text-dark{% else %}bg-success{% endif %}" 
+                                 role="progressbar" style="width: {{ result.probability }}%;">
+                                {{ result.probability }}%
+                            </div>
+                        </div>
+
+                        <!-- Risk Factors Analysis -->
+                        <div class="text-start mt-4 p-3 bg-light rounded border">
+                            <h6 class="fw-bold text-dark mb-2">
+                                <i class="fa-solid fa-magnifying-glass-chart me-1"></i> Key Factors Influencing Prediction:
+                            </h6>
+                            <ul class="mb-0 ps-3 small text-secondary">
+                                {% for factor in result.risk_factors %}
+                                <li class="mb-1">{{ factor }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <!-- Default Welcome Card -->
+                <div class="card shadow-sm border-0 mb-4">
+                    <div class="card-body p-4 text-center">
+                        <div class="mb-3 text-primary">
+                            <i class="fa-solid fa-train fs-1"></i>
+                        </div>
+                        <h5 class="fw-bold">Ready for Prediction</h5>
+                        <p class="text-muted small">
+                            Fill in the trip parameters on the left and click <strong>Predict Delay Status</strong>. The Gradient Boosting model will evaluate operational risks and predict the likelihood of an arrival delay > 15 minutes.
+                        </p>
+                        <div class="alert alert-info py-2 small mb-0 text-start">
+                            <i class="fa-solid fa-lightbulb me-1 text-warning"></i> <strong>Tip:</strong> Checking <em>"Late Incoming Rake"</em> or selecting <em>"Monsoon"</em> noticeably increases delay risk, matching real-world railway patterns!
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Model Info Card -->
+                <div class="card shadow-sm border-0">
+                    <div class="card-header bg-white py-3 border-bottom">
+                        <h6 class="card-title mb-0 fw-bold text-secondary">
+                            <i class="fa-solid fa-code me-2"></i> REST API Endpoint for Testing
+                        </h6>
+                    </div>
+                    <div class="card-body p-3">
+                        <p class="small text-muted mb-2">
+                            You can also query this model programmatically via POST request to <code>/api/predict</code>:
+                        </p>
+                        <pre class="bg-dark text-success p-2 rounded small mb-0"><code>curl -X POST http://127.0.0.1:5000/api/predict \
+  -H "Content-Type: application/json" \
+  -d '{"distance_km": 500, "late_incoming_rake": 1}'</code></pre>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Bottom Section: Model Comparison Table -->
+        <div class="row mt-5">
+            <div class="col-12">
+                <div class="card shadow-sm border-0">
+                    <div class="card-header bg-white py-3 border-bottom">
+                        <h5 class="card-title mb-0 fw-bold text-dark">
+                            <i class="fa-solid fa-table me-2 text-primary"></i> Benchmark: 6 Models Comparison
+                        </h5>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="table-responsive">
+                            <table class="table table-hover table-bordered align-middle text-center">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Model Name</th>
+                                        <th>Category</th>
+                                        <th>Accuracy</th>
+                                        <th>Precision</th>
+                                        <th>Recall</th>
+                                        <th>F1-Score</th>
+                                        <th>ROC-AUC</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="table-success fw-bold">
+                                        <td>Gradient Boosting</td>
+                                        <td>Ensemble (Boosting)</td>
+                                        <td>85.20%</td>
+                                        <td>87.57%</td>
+                                        <td>92.65%</td>
+                                        <td>0.9004</td>
+                                        <td>0.9122</td>
+                                        <td><span class="badge bg-success">Deployed Champion</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Logistic Regression</td>
+                                        <td>Individual (Linear)</td>
+                                        <td>85.65%</td>
+                                        <td>88.51%</td>
+                                        <td>92.07%</td>
+                                        <td>0.9026</td>
+                                        <td>0.9154</td>
+                                        <td><span class="badge bg-secondary">Baseline</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>AdaBoost</td>
+                                        <td>Ensemble (Boosting)</td>
+                                        <td>84.66%</td>
+                                        <td>87.85%</td>
+                                        <td>91.39%</td>
+                                        <td>0.8958</td>
+                                        <td>0.9084</td>
+                                        <td><span class="badge bg-info text-dark">Ensemble 2</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Decision Tree</td>
+                                        <td>Individual (Tree)</td>
+                                        <td>81.82%</td>
+                                        <td>85.85%</td>
+                                        <td>89.58%</td>
+                                        <td>0.8767</td>
+                                        <td>0.8563</td>
+                                        <td><span class="badge bg-secondary">Baseline</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>K-Nearest Neighbors</td>
+                                        <td>Individual (Instance)</td>
+                                        <td>80.52%</td>
+                                        <td>85.33%</td>
+                                        <td>88.17%</td>
+                                        <td>0.8673</td>
+                                        <td>0.8404</td>
+                                        <td><span class="badge bg-secondary">Baseline</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Gaussian Naive Bayes</td>
+                                        <td>Individual (Probabilistic)</td>
+                                        <td>73.72%</td>
+                                        <td>92.28%</td>
+                                        <td>0.6940</td>
+                                        <td>0.7922</td>
+                                        <td>0.8654</td>
+                                        <td><span class="badge bg-secondary">Baseline</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white text-center py-3 mt-5">
+        <small>Machine Learning Mini Project &copy; 2026 | Train Delay Prediction System</small>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
