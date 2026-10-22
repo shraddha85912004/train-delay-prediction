@@ -1,7 +1,11 @@
-# Large datasets (exceed GitHub 100MB limit)
+# Ignore large raw dataset files
 data/*.csv
 data/*.zip
+
+# Whitelist small files in data/
 !data/ir_data_dictionary.csv
+!data/train_sample_small.csv
+!data/inspect_data.py
 
 # Python cache & virtual environments
 __pycache__/
