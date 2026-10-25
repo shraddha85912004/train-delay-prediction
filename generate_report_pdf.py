@@ -229,52 +229,8 @@ def build_pdf(filename):
     ))
     story.append(Spacer(1, 6))
 
-    # SECTION 2: LITERATURE REVIEW & RESEARCH GAPS
-    story.append(Paragraph("2. Literature Review & Research Gaps", h1_style))
-    story.append(Paragraph("<b>2.1 State-of-the-Art Literature Review</b>", h2_style))
-    story.append(Paragraph(
-        "• <b>Traditional Physics & Analytical Models:</b> Earlier research in railway engineering (Carey & Kwieciński, 1994; Higgins et al., 1998) utilized "
-        "queuing theory and timetable simulation. While they accurately model track block signaling, they are computationally slow and fail to assimilate dynamic weather changes.<br/>"
-        "• <b>Classical Machine Learning Classifiers:</b> Studies by Kecman et al. (2015) applied Support Vector Machines (SVM), Decision Trees, and Logistic Regression "
-        "on regional corridors. They confirmed that historical route punctuality and departure hours provide strong predictive signals, but individual decision trees overfit easily.<br/>"
-        "• <b>Ensemble & Boosting Architectures:</b> Recent transportation literature (Huang et al., 2020) demonstrated that boosting algorithms (AdaBoost and Gradient Boosting) "
-        "significantly outperform individual models because boosting trains sequential trees that focus specifically on correcting prior errors.",
-        body_style
-    ))
-    
-    story.append(Paragraph("<b>2.2 Research Gaps Identified & Addressed</b>", h2_style))
-    gaps_data = [
-        [Paragraph("Research Gap Identified in Past Work", table_header), Paragraph("Limitation in Existing Literature", table_header), Paragraph("How This Project Solves It", table_header)],
-        [
-            Paragraph("<b>Gap 1: Ignoring Incoming Trainset Delays</b>", table_cell),
-            Paragraph("Most papers treat journeys independently, ignoring delays inherited from the preceding trip of the same trainset.", table_cell),
-            Paragraph("Engineered and incorporated <code>late_incoming_rake</code> and rake sharing flags into pre-departure feature space.", table_cell)
-        ],
-        [
-            Paragraph("<b>Gap 2: Lack of Composite Weather Indices</b>", table_cell),
-            Paragraph("Literature often records binary weather (rain/clear) rather than severity metrics combining fog and monsoon intensity.", table_cell),
-            Paragraph("Integrated multi-factor weather features: <code>is_monsoon_season</code>, <code>fog_risk_score</code>, and <code>season_severity_score</code>.", table_cell)
-        ],
-        [
-            Paragraph("<b>Gap 3: Operational Data Leakage</b>", table_cell),
-            Paragraph("Several past student projects included post-trip delay minutes or incident logs in training data, causing false 100% accuracy.", table_cell),
-            Paragraph("Strictly audited and dropped <code>delay_minutes</code> and <code>primary_delay_cause</code> prior to model training.", table_cell)
-        ]
-    ]
-    t_gaps = Table(gaps_data, colWidths=[120, 190, 230])
-    t_gaps.setStyle(TableStyle([
-        ('BACKGROUND', (0,0), (-1,0), c_secondary),
-        ('GRID', (0,0), (-1,-1), 0.5, c_border),
-        ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
-        ('ROWBACKGROUNDS', (0,1), (-1,-1), [colors.white, c_light_bg]),
-        ('TOPPADDING', (0,0), (-1,-1), 3),
-        ('BOTTOMPADDING', (0,0), (-1,-1), 3),
-    ]))
-    story.append(t_gaps)
-    story.append(Spacer(1, 6))
-
-    # SECTION 3: METADATA
-    story.append(Paragraph("3. Metadata Specification & Feature Architecture", h1_style))
+    # SECTION 2: METADATA SPECIFICATION
+    story.append(Paragraph("2. Metadata Specification & Feature Architecture", h1_style))
     story.append(Paragraph(
         "The dataset encompasses <b>1,500,000 historical journey records</b> with 44 feature columns and 1 binary target attribute. "
         "Features are organized into 6 operational domains:",
@@ -303,10 +259,10 @@ def build_pdf(filename):
     story.append(t_meta)
     story.append(Spacer(1, 6))
 
-    # SECTION 4: EDA & PREPROCESSING PIPELINE
-    story.append(Paragraph("4. Exploratory Data Analysis & Preprocessing Pipeline", h1_style))
+    # SECTION 3: EDA & PREPROCESSING PIPELINE
+    story.append(Paragraph("3. Exploratory Data Analysis & Preprocessing Pipeline", h1_style))
     story.append(Paragraph(
-        "<b>4.1 Key Exploratory Insights:</b><br/>"
+        "<b>3.1 Key Exploratory Insights:</b><br/>"
         "• <b>Class Imbalance:</b> <b>71.89% Delayed</b> (1,078,329 trips) vs <b>28.11% On-Time</b> (421,671 trips). Imbalance ratio is 2.56:1, necessitating Stratified Splitting and ROC-AUC evaluation.<br/>"
         "• <b>Delay Rate by Train Priority:</b> Premium trains experience significantly lower delays (Vande Bharat: <b>44.3%</b>, Gatimaan: <b>48.6%</b>) "
         "compared to ordinary passenger trains (<b>88.0%</b>) which are frequently held at crossing sidings.<br/>"
@@ -315,7 +271,7 @@ def build_pdf(filename):
         body_style
     ))
     story.append(Paragraph(
-        "<b>4.2 Preprocessing Pipeline Steps:</b><br/>"
+        "<b>3.2 Preprocessing Pipeline Steps:</b><br/>"
         "1. <b>Leakage & ID Removal:</b> Dropped <code>delay_minutes</code>, <code>primary_delay_cause</code>, <code>journey_id</code>, <code>train_number</code>, <code>departure_date</code>, and <code>zone_abbr</code> (38 features remain).<br/>"
         "2. <b>Categorical Encoding:</b> Applied <code>LabelEncoder</code> to 6 categorical variables (<code>train_type, season, zone, source_station_cat, dest_station_cat, traction_type</code>).<br/>"
         "3. <b>Stratified Partitioning:</b> 80% Training set, 20% Holdout test set preserving the 72:28 delay ratio in both partitions.<br/>"
@@ -324,8 +280,8 @@ def build_pdf(filename):
     ))
     story.append(Spacer(1, 6))
 
-    # SECTION 5: MODEL EVALUATION METRICS TABLE
-    story.append(Paragraph("5. Model Evaluation Metrics (Benchmark of 6 Models)", h1_style))
+    # SECTION 4: MODEL EVALUATION METRICS TABLE
+    story.append(Paragraph("4. Model Evaluation Metrics (Benchmark of 6 Models)", h1_style))
     story.append(Paragraph(
         "All 6 shortlisted models were trained on preprocessed data and evaluated on the independent holdout test set:",
         body_style
@@ -353,8 +309,8 @@ def build_pdf(filename):
     story.append(t_res)
     story.append(Spacer(1, 6))
 
-    # SECTION 6: RELEVANT PLOTS & VISUALIZATIONS (EMBEDDED IMAGES)
-    story.append(Paragraph("6. Relevant Plots & Visual Analytics", h1_style))
+    # SECTION 5: RELEVANT PLOTS & VISUALIZATIONS (EMBEDDED IMAGES)
+    story.append(Paragraph("5. Relevant Plots & Visual Analytics", h1_style))
     story.append(Paragraph(
         "The following visualizations were programmatically generated during pipeline execution:",
         body_style
@@ -362,10 +318,11 @@ def build_pdf(filename):
 
     # Grid of Plots
     img_target = Image('plots/target_distribution.png', width=240, height=130) if os.path.exists('plots/target_distribution.png') else None
-    img_roc = Image('plots/roc_curves.png', width=260, height=150) if os.path.exists('plots/roc_curves.png') else None
+    img_roc = Image('plots/roc_curves.png', width=260, height=140) if os.path.exists('plots/roc_curves.png') else None
     img_bar = Image('plots/model_comparison_barchart.png', width=260, height=130) if os.path.exists('plots/model_comparison_barchart.png') else None
     img_feat = Image('plots/feature_importance.png', width=260, height=130) if os.path.exists('plots/feature_importance.png') else None
-    img_cm = Image('plots/confusion_matrices.png', width=480, height=200) if os.path.exists('plots/confusion_matrices.png') else None
+    img_cm = Image('plots/confusion_matrices.png', width=480, height=190) if os.path.exists('plots/confusion_matrices.png') else None
+    img_elbow = Image('plots/knn_elbow_curve.png', width=480, height=160) if os.path.exists('plots/knn_elbow_curve.png') else None
 
     if img_roc and img_bar:
         t_plots_row1 = Table([
@@ -400,12 +357,18 @@ def build_pdf(filename):
             img_cm,
             Paragraph("Fig 5: Confusion Matrices for All 6 Evaluated Models (2x3 Grid)", img_caption)
         ]))
+
+    if img_elbow:
+        story.append(KeepTogether([
+            img_elbow,
+            Paragraph("Fig 6: KNN Elbow Method Analysis (Optimal Elbow at k=7 to 9)", img_caption)
+        ]))
     story.append(Spacer(1, 6))
 
-    # SECTION 7: MODEL COMPARISON & SELECTION
-    story.append(Paragraph("7. Model Comparison to Pick the Best Model", h1_style))
+    # SECTION 6: MODEL COMPARISON & SELECTION
+    story.append(Paragraph("6. Model Comparison to Pick the Best Model", h1_style))
     story.append(Paragraph(
-        "<b>7.1 Comparative Analysis Across Model Families:</b><br/>"
+        "<b>6.1 Comparative Analysis Across Model Families:</b><br/>"
         "• <b>Boosting Ensembles (AdaBoost & Gradient Boosting):</b> Both boosting models achieved superior Recall scores (<b>91.39%</b> and <b>92.65%</b>). "
         "By iteratively re-weighting hard-to-classify samples, boosting effectively minimized False Negatives.<br/>"
         "• <b>Linear Baseline (Logistic Regression):</b> Showed strong accuracy (85.65%) and high ROC-AUC (0.9154) with ultra-fast training (0.06s). "
@@ -415,7 +378,7 @@ def build_pdf(filename):
         body_style
     ))
     story.append(Paragraph(
-        "<b>7.2 Final Selection & Justification:</b><br/>"
+        "<b>6.2 Final Selection & Justification:</b><br/>"
         "• <b>Operational Champion:</b> <b>Gradient Boosting Classifier</b> is selected as the production model for network dispatching. "
         "In passenger railway operations, failing to predict a delay (False Negative) is far more damaging to scheduling than a false alarm. "
         "Gradient Boosting achieved the highest <b>Recall (92.65%)</b>, robust <b>F1-score (0.9004)</b>, and high <b>ROC-AUC (0.9122)</b>, while providing native feature importances.<br/>"
@@ -424,8 +387,8 @@ def build_pdf(filename):
     ))
     story.append(Spacer(1, 6))
 
-    # SECTION 8: RESPONSIBLE USE OF AI TOOLS
-    story.append(Paragraph("8. Responsible Use of AI Tools", h1_style))
+    # SECTION 7: RESPONSIBLE USE OF AI TOOLS
+    story.append(Paragraph("7. Responsible Use of AI Tools", h1_style))
     
     ai_box = [
         [Paragraph("<b>a. Declaration of AI Usage with Prompts</b>", box_title)],
@@ -435,7 +398,7 @@ def build_pdf(filename):
             "<i>2. 'How do I check for data leakage before training classification models on journey records?'</i><br/>"
             "<i>3. 'Write a scikit-learn preprocessing pipeline using LabelEncoder and StandardScaler.'</i><br/>"
             "<i>4. 'Shortlist 6 models: 4 individual baselines and 2 boosting ensembles (AdaBoost and Gradient Boosting, no Random Forest).'</i><br/>"
-            "<i>5. 'Help structure our project report covering problem statement, literature review, metadata, metrics table, and AI reflections.'</i>",
+            "<i>5. 'Help structure our project report covering problem statement, metadata, metrics table, and AI reflections.'</i>",
             box_text
         )],
         [Paragraph("<b>b. Critical Evaluation of AI Output</b>", box_title)],
