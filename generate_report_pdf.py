@@ -43,7 +43,7 @@ class NumberedCanvas(canvas.Canvas):
         self.setLineWidth(0.5)
         self.line(36, 42, 576, 42)
         
-        self.drawString(36, 30, "Project Report | Team: 2 Members | Indian Railways Journey Dataset")
+        self.drawString(36, 30, "Project Report | Team: 2 Members | Indian Railways Journey Dataset (100k Records: 80k/20k Split)")
         self.drawRightString(576, 30, f"Page {self._pageNumber} of {page_count}")
         self.restoreState()
 
@@ -198,7 +198,7 @@ def build_pdf(filename):
     story.append(Paragraph(
         "<b>Course:</b> Machine Learning Mini Project &nbsp;|&nbsp; "
         "<b>Team:</b> 2 Members &nbsp;|&nbsp; "
-        "<b>Dataset:</b> Railway Journey Dataset (1.5M Records) &nbsp;|&nbsp; "
+        "<b>Dataset:</b> Railway Journey Dataset (100,000 Records: 80,000 Train / 20,000 Test Split) &nbsp;|&nbsp; "
         "<b>Target:</b> <code>is_delayed</code> (>15 mins late)",
         subtitle_style
     ))
@@ -219,12 +219,12 @@ def build_pdf(filename):
     
     story.append(Paragraph("<b>1.2 Project Objectives</b>", h2_style))
     story.append(Paragraph(
-        "1. <b>Understand Delay Drivers:</b> Analyze 1.5 million historical passenger rail journeys to identify primary causes of delay.<br/>"
-        "2. <b>Build a Clean Data Pipeline:</b> Clean data, prevent data leakage by eliminating post-trip columns, encode categoricals, and scale features.<br/>"
-        "3. <b>Benchmark 6 Diverse Machine Learning Models:</b> Implement 4 individual baselines (Logistic Regression, Decision Tree, Naive Bayes, KNN) "
+        "1. <b>Analyze 1 Lakh (100,000) Journey Records:</b> Analyze a statistically representative benchmark sample of 100,000 historical passenger rail journeys to identify primary delay causes without memory or compute bottlenecks.<br/>"
+        "2. <b>Standard 80,000 / 20,000 Pareto Split:</b> Divide the 1 Lakh dataset into an 80,000-row training set (80%) and a 20,000-row test set (20%) using stratified sampling to preserve the 72% delayed vs 28% on-time class ratio.<br/>"
+        "3. <b>Build a Clean Data Pipeline:</b> Clean data, strictly eliminate post-departure data leakage columns (<code>delay_minutes</code>, <code>primary_delay_cause</code>), encode categoricals, and apply feature scaling.<br/>"
+        "4. <b>Benchmark 6 Diverse Machine Learning Models:</b> Implement 4 individual baselines (Logistic Regression, Decision Tree, Naive Bayes, KNN with k=19) "
         "and 2 boosting ensembles (AdaBoost and Gradient Boosting).<br/>"
-        "4. <b>Multi-Criteria Evaluation:</b> Evaluate models using Accuracy, Precision, Recall, F1-Score, and ROC-AUC on a stratified test partition.<br/>"
-        "5. <b>Select Operational Model & Deploy:</b> Choose the optimal model balancing Recall and speed, and deploy it as interactive web applications.",
+        "5. <b>Multi-Criteria Evaluation & Deployment:</b> Evaluate models on the 20,000 holdout test partition using Accuracy, Precision, Recall, F1-Score, and ROC-AUC, and deploy the optimal model as interactive web applications.",
         body_style
     ))
     story.append(Spacer(1, 6))
@@ -232,7 +232,7 @@ def build_pdf(filename):
     # SECTION 2: METADATA SPECIFICATION
     story.append(Paragraph("2. Metadata Specification & Feature Architecture", h1_style))
     story.append(Paragraph(
-        "The dataset encompasses <b>1,500,000 historical journey records</b> with 44 feature columns and 1 binary target attribute. "
+        "The study utilizes a representative benchmark sample of <b>100,000 historical journey records</b> (split into <b>80,000 training</b> and <b>20,000 testing</b> rows) with 38 operational features and 1 binary target attribute. "
         "Features are organized into 6 operational domains:",
         body_style
     ))

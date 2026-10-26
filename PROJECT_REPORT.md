@@ -16,19 +16,17 @@ Train punctuality is one of the biggest challenges in public rail transportation
 Currently, passengers and controllers only find out about delays after the train has already started and fallen behind schedule. The problem we are addressing in this project is to **predict whether a train will be delayed by more than 15 minutes before it even departs**, using factors that are known in advance (like train type, route distance, weather conditions, historical route punctuality, and departure time).
 
 ### 1.2 Objectives
-1. **Understand Delay Factors:** Study historical train journey records to find out which features (such as weather, season, track type, and rake sharing) are most responsible for delays.
-2. **Build a Clean Data Pipeline:** Clean the dataset, remove any information that would not be available before departure (to avoid data leakage), encode categorical features, and scale numerical values.
-3. **Implement 6 Different Machine Learning Models:**
-   - 4 Individual Models: Logistic Regression, Decision Tree, Gaussian Naive Bayes, and K-Nearest Neighbors (KNN).
-   - 2 Ensemble Models: AdaBoost and Gradient Boosting (boosting methods).
-4. **Compare Model Performance:** Evaluate all 6 models using Accuracy, Precision, Recall, F1-Score, and ROC-AUC on a separate test set.
-5. **Select the Best Model:** Choose the best model based on accuracy, ability to detect delayed trains (Recall), and execution time for real-world deployment.
+1. **Analyze 1 Lakh (100,000) Journey Records:** Analyze a representative benchmark sample of 100,000 (1 Lakh) historical passenger rail journeys to identify primary causes of delay without memory and computation bottlenecks.
+2. **Standard 80,000 / 20,000 Train-Test Split:** Divide the 1 Lakh dataset into an 80,000-row training set (80%) and a 20,000-row test set (20%) using stratified sampling to preserve the 72% delayed vs 28% on-time class ratio.
+3. **Build a Clean Preprocessing Pipeline:** Clean the dataset, strictly remove post-departure leakage columns (`delay_minutes`, `primary_delay_cause`), encode categorical features, and scale numerical values.
+4. **Benchmark 6 Machine Learning Models:** Train and evaluate 4 individual baselines (Logistic Regression, Decision Tree, Gaussian Naive Bayes, and K-Nearest Neighbors with $k=19$) and 2 boosting ensembles (AdaBoost and Gradient Boosting).
+5. **Multi-Criteria Evaluation & Deployment:** Evaluate performance on the 20,000 holdout test set using Accuracy, Precision, Recall, F1-Score, and ROC-AUC to select the optimal model for interactive web deployment.
 
 ---
 
 ## 2. Metadata of the Dataset
 
-We used a comprehensive railway journey dataset containing 1,500,000 historical passenger train records with 44 feature columns and 1 binary target column.
+We used a representative benchmark sample of **100,000 (1 Lakh) historical passenger train records** partitioned into **80,000 training** and **20,000 testing** journeys with 38 operational features and 1 binary target column.
 
 ### 2.1 Feature Overview
 
