@@ -133,7 +133,7 @@ models = {
     "Logistic Regression": LogisticRegression(max_iter=1000, random_state=42),
     "Decision Tree": DecisionTreeClassifier(max_depth=10, random_state=42),
     "Gaussian Naive Bayes": GaussianNB(),
-    "K-Nearest Neighbors": KNeighborsClassifier(n_neighbors=7, n_jobs=-1),
+    "K-Nearest Neighbors": KNeighborsClassifier(n_neighbors=19, n_jobs=-1),
     "AdaBoost (Ensemble 1)": AdaBoostClassifier(n_estimators=80, random_state=42),
     "Gradient Boosting (Ensemble 2)": GradientBoostingClassifier(n_estimators=80, max_depth=4, random_state=42)
 }

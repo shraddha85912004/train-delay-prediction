@@ -289,12 +289,12 @@ def build_pdf(filename):
     
     results_data = [
         [Paragraph("Model Name", table_header), Paragraph("Architectural Category", table_header), Paragraph("Accuracy", table_header), Paragraph("Precision", table_header), Paragraph("Recall", table_header), Paragraph("F1-Score", table_header), Paragraph("ROC-AUC", table_header), Paragraph("Train Time", table_header)],
-        [Paragraph("<b>Gradient Boosting</b>", table_cell_bold), Paragraph("Ensemble (Boosting)", table_cell), Paragraph("85.20%", table_cell_center), Paragraph("87.57%", table_cell_center), Paragraph("<b>92.65%</b>", table_cell_center), Paragraph("<b>0.9004</b>", table_cell_center), Paragraph("<b>0.9122</b>", table_cell_center), Paragraph("11.49s", table_cell_center)],
-        [Paragraph("<b>Logistic Regression</b>", table_cell_bold), Paragraph("Individual (Linear)", table_cell), Paragraph("<b>85.65%</b>", table_cell_center), Paragraph("<b>88.51%</b>", table_cell_center), Paragraph("92.07%", table_cell_center), Paragraph("0.9026", table_cell_center), Paragraph("0.9154", table_cell_center), Paragraph("0.06s", table_cell_center)],
-        [Paragraph("<b>AdaBoost</b>", table_cell_bold), Paragraph("Ensemble (Boosting)", table_cell), Paragraph("84.66%", table_cell_center), Paragraph("87.85%", table_cell_center), Paragraph("91.39%", table_cell_center), Paragraph("0.8958", table_cell_center), Paragraph("0.9084", table_cell_center), Paragraph("3.64s", table_cell_center)],
-        [Paragraph("<b>Decision Tree</b>", table_cell_bold), Paragraph("Individual (Tree)", table_cell), Paragraph("81.82%", table_cell_center), Paragraph("85.85%", table_cell_center), Paragraph("89.58%", table_cell_center), Paragraph("0.8767", table_cell_center), Paragraph("0.8563", table_cell_center), Paragraph("0.38s", table_cell_center)],
-        [Paragraph("<b>K-Nearest Neighbors</b>", table_cell_bold), Paragraph("Individual (Instance)", table_cell), Paragraph("80.52%", table_cell_center), Paragraph("85.33%", table_cell_center), Paragraph("88.17%", table_cell_center), Paragraph("0.8673", table_cell_center), Paragraph("0.8404", table_cell_center), Paragraph("0.01s", table_cell_center)],
-        [Paragraph("<b>Gaussian Naive Bayes</b>", table_cell_bold), Paragraph("Individual (Probabilistic)", table_cell), Paragraph("73.72%", table_cell_center), Paragraph("92.28%", table_cell_center), Paragraph("69.40%", table_cell_center), Paragraph("0.7922", table_cell_center), Paragraph("0.8654", table_cell_center), Paragraph("0.03s", table_cell_center)]
+        [Paragraph("<b>Logistic Regression</b>", table_cell_bold), Paragraph("Individual (Linear)", table_cell), Paragraph("<b>85.95%</b>", table_cell_center), Paragraph("89.13%", table_cell_center), Paragraph("91.76%", table_cell_center), Paragraph("<b>0.9043</b>", table_cell_center), Paragraph("<b>0.9196</b>", table_cell_center), Paragraph("2.51s", table_cell_center)],
+        [Paragraph("<b>Gradient Boosting</b>", table_cell_bold), Paragraph("Ensemble (Boosting)", table_cell), Paragraph("85.89%", table_cell_center), Paragraph("88.63%", table_cell_center), Paragraph("<b>92.34%</b>", table_cell_center), Paragraph("<b>0.9044</b>", table_cell_center), Paragraph("0.9195", table_cell_center), Paragraph("53.94s", table_cell_center)],
+        [Paragraph("<b>AdaBoost</b>", table_cell_bold), Paragraph("Ensemble (Boosting)", table_cell), Paragraph("85.17%", table_cell_center), Paragraph("87.81%", table_cell_center), Paragraph("92.30%", table_cell_center), Paragraph("0.9000", table_cell_center), Paragraph("0.9117", table_cell_center), Paragraph("13.56s", table_cell_center)],
+        [Paragraph("<b>Decision Tree</b>", table_cell_bold), Paragraph("Individual (Tree)", table_cell), Paragraph("81.59%", table_cell_center), Paragraph("86.82%", table_cell_center), Paragraph("87.88%", table_cell_center), Paragraph("0.8735", table_cell_center), Paragraph("0.8634", table_cell_center), Paragraph("1.28s", table_cell_center)],
+        [Paragraph("<b>K-Nearest Neighbors (k=19)</b>", table_cell_bold), Paragraph("Individual (Instance)", table_cell), Paragraph("80.32%", table_cell_center), Paragraph("84.05%", table_cell_center), Paragraph("89.84%", table_cell_center), Paragraph("0.8685", table_cell_center), Paragraph("0.8514", table_cell_center), Paragraph("0.02s", table_cell_center)],
+        [Paragraph("<b>Gaussian Naive Bayes</b>", table_cell_bold), Paragraph("Individual (Probabilistic)", table_cell), Paragraph("73.32%", table_cell_center), Paragraph("<b>92.73%</b>", table_cell_center), Paragraph("68.47%", table_cell_center), Paragraph("0.7878", table_cell_center), Paragraph("0.8694", table_cell_center), Paragraph("0.05s", table_cell_center)]
     ]
     t_res = Table(results_data, colWidths=[95, 85, 48, 50, 50, 48, 52, 52])
     t_res.setStyle(TableStyle([
@@ -302,7 +302,7 @@ def build_pdf(filename):
         ('GRID', (0,0), (-1,-1), 0.5, c_border),
         ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
         ('ROWBACKGROUNDS', (0,1), (-1,-1), [colors.white, c_light_bg]),
-        ('BACKGROUND', (0,1), (-1,1), colors.HexColor("#DCFCE7")), # Champion highlight
+        ('BACKGROUND', (0,2), (-1,2), colors.HexColor("#DCFCE7")), # Champion highlight (Gradient Boosting)
         ('TOPPADDING', (0,0), (-1,-1), 3),
         ('BOTTOMPADDING', (0,0), (-1,-1), 3),
     ]))

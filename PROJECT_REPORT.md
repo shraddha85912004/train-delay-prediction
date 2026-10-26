@@ -78,12 +78,12 @@ We trained **6 different machine learning models** on the preprocessed training 
 
 | Model Name | Category | Accuracy | Precision | Recall | F1-Score | **ROC-AUC** | Training Time |
 |---|---|:---:|:---:|:---:|:---:|:---:|:---:|
-| **Logistic Regression** | Individual (Linear) | **85.65%** | **88.51%** | 0.9207 | **0.9026** | **0.9154** | 0.06s |
-| **Gradient Boosting** | **Ensemble (Boosting)** | **85.20%** | 87.57% | **0.9265** | **0.9004** | **0.9122** | 11.49s |
-| **AdaBoost** | **Ensemble (Boosting)** | 84.66% | 87.85% | 0.9139 | 0.8958 | 0.9084 | 3.64s |
-| **Decision Tree** | Individual (Tree) | 81.82% | 85.85% | 0.8958 | 0.8767 | 0.8563 | 0.38s |
-| **K-Nearest Neighbors (KNN)** | Individual (Instance) | 80.52% | 85.33% | 0.8817 | 0.8673 | 0.8404 | 0.01s |
-| **Gaussian Naive Bayes** | Individual (Probabilistic) | 73.72% | **92.28%** | 0.6940 | 0.7922 | 0.8654 | 0.03s |
+| **Logistic Regression** | Individual (Linear) | **85.95%** | 89.13% | 91.76% | **0.9043** | **0.9196** | 2.51s |
+| **Gradient Boosting** | **Ensemble (Boosting)** | 85.89% | 88.63% | **92.34%** | **0.9044** | 0.9195 | 53.94s |
+| **AdaBoost** | **Ensemble (Boosting)** | 85.17% | 87.81% | 92.30% | 0.9000 | 0.9117 | 13.56s |
+| **Decision Tree** | Individual (Tree) | 81.59% | 86.82% | 87.88% | 0.8735 | 0.8634 | 1.28s |
+| **K-Nearest Neighbors (k=19)** | Individual (Instance) | 80.32% | 84.05% | 89.84% | 0.8685 | 0.8514 | 0.02s |
+| **Gaussian Naive Bayes** | Individual (Probabilistic) | 73.32% | **92.73%** | 68.47% | 0.7878 | 0.8694 | 0.05s |
 
 ---
 
